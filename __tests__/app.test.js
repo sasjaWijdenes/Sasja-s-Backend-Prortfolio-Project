@@ -1,15 +1,10 @@
 const request = require("supertest"),
   db = require("../db/connection.js"),
-  app = require("../db/app.js");
-const seed = require("../db/seeds/seed.js"),
-  {
-    categoryData,
-    commentData,
-    reviewData,
-    userData,
-  } = require("../db/data/test-data/index.js");
+  app = require("../db/app.js"),
+  seed = require("../db/seeds/seed.js"),
+  testData = require("../db/data/test-data/index.js");
 
-beforeEach(() => seed({ categoryData, commentData, reviewData, userData }));
+beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("/api", () => {
