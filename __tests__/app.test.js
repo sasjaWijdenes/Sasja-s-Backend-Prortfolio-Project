@@ -67,7 +67,7 @@ describe("/api", () => {
     test("400: Should return when passed an id that is not valid", () => {
       return request(app)
         .get("/api/reviews/InvalidId")
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toEqual("Invalid Id");
         });
