@@ -36,4 +36,14 @@ describe("/api", () => {
       });
     });
   });
+  describe("Error Handling", () => {
+    test("404: Should return 404 code and handle error when passed an invalid route", () => {
+      return request(app)
+        .get("/api/invalidRoute")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("That route does not exist");
+        });
+    });
+  });
 });
