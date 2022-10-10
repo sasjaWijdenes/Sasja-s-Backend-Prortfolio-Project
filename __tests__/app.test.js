@@ -39,30 +39,45 @@ describe("/api", () => {
           .expect(200)
           .then(({ body }) => {
             const { review } = body;
-            console.log(review, "<<<review passed to test");
             expect(review).toEqual({
-              review_id: 1,
-              title: "Culture a Love of Agriculture With Agricola ",
-              category: "strategy",
+              title: "Agricola",
               designer: "Uwe Rosenberg",
-              owner: "tickle122",
-              review_body: expect.any(String),
+              owner: "mallionaire",
               review_img_url:
-                "https://images.pexels.com/photos/4917821/pexels-photo-4917821.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260 ",
-              created_at: "2021-01-18 10:00:20.514",
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+              review_body: "Farmyard fun!",
+              category: "euro game",
+              created_at: "2021-01-18T10:00:20.514Z",
               votes: 1,
+              review_id: 1,
             });
           });
       });
     });
   });
   describe("Error Handling", () => {
-    test("404: Should return 404 code and handle error when passed an invalid route", () => {
+    test("404: Should return when passed an invalid route", () => {
       return request(app)
         .get("/api/invalidRoute")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toEqual("That route does not exist");
+        });
+    });
+    test("400: Should return when passed an id that is not valid", () => {
+      return request(app)
+        .get("/api/reviews/InvalidId")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Id");
+        });
+    });
+    test("404: should return when passed an id for object that doesnt exist", () => {
+      return request(app)
+        .get("/api/reviews/99999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("No user found for user 99999");
         });
     });
   });
