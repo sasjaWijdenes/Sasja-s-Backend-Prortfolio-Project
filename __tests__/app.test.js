@@ -55,6 +55,28 @@ describe("/api", () => {
       });
     });
   });
+  describe("/users", () => {
+    test("Should return an array of all user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body;
+          expect(users).toHaveLength(4);
+          expect(
+            users.forEach((user) => {
+              expect(user).toEqual(
+                expect.objectContaining({
+                  username: expect.any(String),
+                  name: expect.any(String),
+                  avatar_url: expect.any(String),
+                })
+              );
+            })
+          );
+        });
+    });
+  });
   describe("Error Handling", () => {
     test("404: Should return when passed an invalid route", () => {
       return request(app)

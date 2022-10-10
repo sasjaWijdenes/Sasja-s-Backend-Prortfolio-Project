@@ -3,9 +3,11 @@ const express = require("express"),
 const {
   getAllCategories,
   getReviewById,
+  getAllUsers,
 } = require("./controllers/controller.js");
 
 app.get("/api/categories", getAllCategories);
+app.get("/api/users", getAllUsers);
 app.get("/api/reviews/:review_id", getReviewById);
 
 app.use((err, req, res, next) => {

@@ -1,10 +1,10 @@
 const db = require("../connection.js");
 
 exports.fetchAllCategories = () => {
-  return db.query(`SELECT * FROM categories;`).then((data) => {
-    const { rows } = data;
-    return rows;
-  });
+  return db.query(`SELECT * FROM categories;`).then(({ rows }) => rows);
+};
+exports.fetchAllUsers = () => {
+  return db.query(`SELECT * FROM users;`).then(({ rows }) => rows);
 };
 exports.fetchReviewById = (id) => {
   return db
