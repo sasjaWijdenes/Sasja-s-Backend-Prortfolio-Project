@@ -1,5 +1,15 @@
 const db = require("../connection.js");
 
+exports.fetchAllReviews = () => {
+  return db
+    .query(
+      `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id GROUP BY reviews.review_id;`
+    )
+    .then(({ rows: reviews }) => {
+      return reviews;
+    });
+};
+
 exports.fetchReviewById = (id) => {
   return db
     .query(

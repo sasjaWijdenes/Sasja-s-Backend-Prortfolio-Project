@@ -14,8 +14,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/categories")
           .expect(200)
-          .then(({ body }) => {
-            const { categories } = body;
+          .then(({ body: { categories } }) => {
             expect(categories).toHaveLength(4);
             expect(
               categories.forEach((obj) => {
@@ -32,6 +31,32 @@ describe("/api", () => {
     });
 
     describe("/reviews", () => {
+      test("Should return an array of all review objects with an owner and comment_count", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toHaveLength(13);
+            expect(
+              reviews.forEach((review) => {
+                expect(review).toEqual(
+                  expect.objectContaining({
+                    owner: expect.any(String),
+                    designer: expect.any(String),
+                    review_img_url: expect.any(String),
+                    review_body: expect.any(String),
+                    review_id: expect.any(Number),
+                    category: expect.any(String),
+                    title: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    comment_count: expect.any(Number),
+                  })
+                );
+              })
+            );
+          });
+      });
       describe("/review_id", () => {
         test("Should return a review object relating to the passed review_id", () => {
           return request(app)
