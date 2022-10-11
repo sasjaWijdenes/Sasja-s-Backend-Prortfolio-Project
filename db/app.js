@@ -15,15 +15,15 @@ app.get("/api/reviews/:review_id", getReviewById);
 
 app.patch("/api/reviews/:review_id", incrementVotes);
 
+app.all("*", (req, res) =>
+  res.status(404).send({ msg: "That route does not exist" })
+);
+
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   }
   res.status(400).send({ msg: "Invalid Id" });
 });
-
-app.all("*", (req, res) =>
-  res.status(404).send({ msg: "That route does not exist" })
-);
 
 module.exports = app;
