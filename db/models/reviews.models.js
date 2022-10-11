@@ -15,3 +15,14 @@ exports.fetchReviewById = (id) => {
       }
     });
 };
+exports.updateReviewVotes = (id, votesToAdd) => {
+  return this.fetchReviewById(id).then(({ votes }) => {
+    const newVotes = votesToAdd + votes;
+    return db
+      .query(
+        `UPDATE reviews SET votes = $1 WHERE review_id = $2 RETURNING *;`,
+        [newVotes, id]
+      )
+      .then(({ rows }) => rows[0]);
+  });
+};

@@ -1,12 +1,19 @@
 const express = require("express"),
   { getAllCategories } = require("./controllers/categories.controllers.js"),
   { getAllUsers } = require("./controllers/users.controllers.js"),
-  { getReviewById } = require("./controllers/reviews.controllers.js"),
+  {
+    getReviewById,
+    incrementVotes,
+  } = require("./controllers/reviews.controllers.js"),
   app = express();
+
+app.use(express.json());
 
 app.get("/api/categories", getAllCategories);
 app.get("/api/users", getAllUsers);
 app.get("/api/reviews/:review_id", getReviewById);
+
+app.patch("/api/reviews/:review_id", incrementVotes);
 
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
