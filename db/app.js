@@ -1,11 +1,11 @@
 const express = require("express"),
+  { getAllCategories } = require("./controllers/categories.controllers.js"),
+  { getAllUsers } = require("./controllers/users.controllers.js"),
+  { getReviewById } = require("./controllers/reviews.controllers.js"),
   app = express();
-const {
-  getAllCategories,
-  getReviewById,
-} = require("./controllers/controller.js");
 
 app.get("/api/categories", getAllCategories);
+app.get("/api/users", getAllUsers);
 app.get("/api/reviews/:review_id", getReviewById);
 
 app.use((err, req, res, next) => {
