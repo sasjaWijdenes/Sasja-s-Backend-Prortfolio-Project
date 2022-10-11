@@ -138,7 +138,7 @@ describe("/api", () => {
         .send({ inc_votes: 5 })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toEqual("No user found for user 99599");
+          expect(body.msg).toBe("No user found for user 99599");
         });
     });
     test("404: Should return when passed a malformed body", () => {
@@ -146,7 +146,20 @@ describe("/api", () => {
         .patch("/api/reviews/2")
         .send({})
         .expect(404)
-        .then(({ body }) => {});
+        .then(({ body }) => {
+          expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("400: Should return when passed a body with property value of incorrect type", () => {
+      return request(app)
+        .patch("/api/reviews/3")
+        .send({ inc_votes: "4" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "Request body has property of wrong data type."
+          );
+        });
     });
   });
 });
