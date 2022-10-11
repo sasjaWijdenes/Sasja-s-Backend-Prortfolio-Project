@@ -66,7 +66,7 @@ describe("/api", () => {
                   "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
                 review_body: "We couldn't find the werewolf!",
                 category: "social deduction",
-                created_at: new Date(1610964101251),
+                created_at: "2021-01-18T10:01:41.251Z",
                 votes: 5,
                 review_id: 3,
                 comment_count: 3,

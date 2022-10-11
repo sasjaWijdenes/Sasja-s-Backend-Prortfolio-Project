@@ -2,7 +2,10 @@ const db = require("../connection.js");
 
 exports.fetchReviewById = (id) => {
   return db
-    .query(`SELECT * FROM reviews WHERE review_id = $1`, [id])
+    .query(
+      `SELECT reviews.*, COUNT(comments.review_id) AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id WHERE reviews.review_id = $1 GROUP BY reviews.review_id;`,
+      [id]
+    )
     .then(({ rows }) => {
       const review = rows[0];
       if (!review) {
@@ -11,6 +14,7 @@ exports.fetchReviewById = (id) => {
           msg: `No user found for user ${id}`,
         });
       } else {
+        review.comment_count = Number(review.comment_count);
         return review;
       }
     });
