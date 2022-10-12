@@ -1,16 +1,22 @@
 const db = require("../connection.js");
 
 exports.fetchAllReviews = (sort) => {
-  const queryValues = [];
+  const queryValues = [],
+    categories = ["euro game", "dexterity", "social deduction", undefined];
   let queryString = `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id `;
+  if (!categories.includes(sort))
+    return Promise.reject({ status: 404, msg: "No such category" });
   if (sort) {
     queryString += `WHERE reviews.category = $1 `;
     queryValues.push(sort);
   }
   queryString += `GROUP BY reviews.review_id;`;
-  return db.query(queryString, queryValues).then(({ rows: reviews }) => {
-    return reviews;
-  });
+  return db
+    .query(queryString, queryValues)
+    .then(({ rows: reviews }) => {
+      return reviews;
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.fetchReviewById = (id) => {

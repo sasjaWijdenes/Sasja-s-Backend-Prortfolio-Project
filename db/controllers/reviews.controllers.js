@@ -7,9 +7,11 @@ const {
 
 exports.getAllReviews = (req, res, next) => {
   const { sort } = req.query;
-  fetchAllReviews(sort).then((reviews) => {
-    res.status(200).send({ reviews });
-  });
+  fetchAllReviews(sort)
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch(next);
 };
 
 exports.getReviewById = (req, res, next) => {

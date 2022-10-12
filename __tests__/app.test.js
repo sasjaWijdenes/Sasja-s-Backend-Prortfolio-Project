@@ -208,5 +208,13 @@ describe("/api", () => {
           expect(body.msg).toEqual("No user found for user 99999");
         });
     });
+    test("Should return when passed a query that doesn't exist", () => {
+      return request(app)
+        .get("/api/reviews?sort=pineapple")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("No such category");
+        });
+    });
   });
 });
