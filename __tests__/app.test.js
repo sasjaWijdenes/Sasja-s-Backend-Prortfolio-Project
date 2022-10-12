@@ -29,7 +29,6 @@ describe("/api", () => {
           });
       });
     });
-
     describe("/reviews", () => {
       test("Should return an array of all review objects with an owner and comment_count", () => {
         return request(app)
@@ -97,6 +96,46 @@ describe("/api", () => {
                 comment_count: 3,
               });
             });
+        });
+        describe("/review_id/comments", () => {
+          test("Should return an array of all comments associated with passed review_id", () => {
+            return request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).toHaveLength(3);
+                expect(
+                  comments.forEach((comment) => {
+                    expect(comment).toEqual(
+                      expect.objectContaining({
+                        comment_id: expect.any(Number),
+                        body: expect.any(String),
+                        votes: expect.any(Number),
+                        author: expect.any(String),
+                        review_id: expect.any(Number),
+                        created_at: expect.any(String),
+                      })
+                    );
+                  })
+                );
+              });
+          });
+          test("Comments should be returned in reverse-chronological order", () => {
+            return request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                const dates = comments.map((comment) =>
+                  new Date(comment.created_at).getTime()
+                ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
+                console.log(dates);
+                expect(
+                  [...dates, 0].every(
+                    (date, index, arr) => date > arr[index + 1]
+                  )
+                ).toBe(true);
+              });
+          });
         });
       });
     });
