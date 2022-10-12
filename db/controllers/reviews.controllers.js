@@ -6,7 +6,9 @@ const {
 } = require("../models/reviews.models.js");
 
 exports.getAllReviews = (req, res, next) => {
-  fetchAllReviews().then((reviews) => {
+  const { sort } = req.query;
+  console.log(sort);
+  fetchAllReviews(sort).then((reviews) => {
     res.status(200).send({ reviews });
   });
 };

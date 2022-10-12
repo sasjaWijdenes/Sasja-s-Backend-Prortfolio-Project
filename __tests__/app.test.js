@@ -56,6 +56,25 @@ describe("/api", () => {
             );
           });
       });
+      test("Should accept a query for category to sort the reviews by", () => {
+        return request(app)
+          .get("/api/reviews?sort=dexterity")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            expect(reviews).toHaveLength(1);
+            expect(reviews[0]).toEqual({
+              title: "Jenga",
+              designer: "Leslie Scott",
+              owner: "philippaclaire9",
+              review_img_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+              review_body: "Fiddly fun for all the family",
+              category: "dexterity",
+              created_at: new Date(1610964101251),
+              votes: 5,
+            });
+          });
+      });
       describe("/review_id", () => {
         test("Should return a review object relating to the passed review_id", () => {
           return request(app)
@@ -120,22 +139,22 @@ describe("/api", () => {
                 );
               });
           });
-          test("Comments should be returned in reverse-chronological order", () => {
-            return request(app)
-              .get("/api/reviews/2/comments")
-              .expect(200)
-              .then(({ body: { comments } }) => {
-                const dates = comments.map((comment) =>
-                  new Date(comment.created_at).getTime()
-                ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
-                console.log(dates);
-                expect(
-                  [...dates, 0].every(
-                    (date, index, arr) => date > arr[index + 1]
-                  )
-                ).toBe(true);
-              });
-          });
+          // test("Comments should be returned in reverse-chronological order", () => {
+          //   return request(app)
+          //     .get("/api/reviews/2/comments")
+          //     .expect(200)
+          //     .then(({ body: { comments } }) => {
+          //       const dates = comments.map((comment) =>
+          //         new Date(comment.created_at).getTime()
+          //       ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
+          //       console.log(dates);
+          //       expect(
+          //         [...dates, 0].every(
+          //           (date, index, arr) => date > arr[index + 1]
+          //         )
+          //       ).toBe(true);
+          //     });
+          // });
         });
       });
     });
