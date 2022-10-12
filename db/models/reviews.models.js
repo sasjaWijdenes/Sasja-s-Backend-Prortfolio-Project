@@ -2,18 +2,15 @@ const db = require("../connection.js");
 
 exports.fetchAllReviews = (sort) => {
   const queryValues = [];
-  const queryString1 = `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id `;
+  let queryString = `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id `;
   if (sort) {
-    queryString1 += `WHERE reviews.category = $1 `;
+    queryString += `WHERE reviews.category = $1 `;
     queryValues.push(sort);
   }
-  queryString2 = `GROUP BY reviews.review_id;`;
-
-  return db
-    .query(queryString1 + queryString2, queryValues)
-    .then(({ rows: reviews }) => {
-      return reviews;
-    });
+  queryString += `GROUP BY reviews.review_id;`;
+  return db.query(queryString, queryValues).then(({ rows: reviews }) => {
+    return reviews;
+  });
 };
 
 exports.fetchReviewById = (id) => {

@@ -7,7 +7,6 @@ const {
 
 exports.getAllReviews = (req, res, next) => {
   const { sort } = req.query;
-  console.log(sort);
   fetchAllReviews(sort).then((reviews) => {
     res.status(200).send({ reviews });
   });
