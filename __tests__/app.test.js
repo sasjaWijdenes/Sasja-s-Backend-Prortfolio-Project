@@ -268,11 +268,11 @@ describe("/api", () => {
           expect(body.msg).toBe("No user found for user 99599");
         });
     });
-    test("PATCH: 404: Should return when passed a malformed body", () => {
+    test("PATCH: 400: Should return when passed a malformed body", () => {
       return request(app)
         .patch("/api/reviews/2")
         .send({})
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Passed malformed body");
         });
@@ -309,7 +309,7 @@ describe("/api", () => {
           expect(body.msg).toBe("Passed malformed body");
         });
     });
-    test("POST: 404 Non-existant id should return when passed an id not in the database", () => {
+    test("POST: 404 Non-existant id should return when passed an id does not match any review", () => {
       return request(app)
         .post("/api/reviews/9999/comments")
         .send({
@@ -318,7 +318,7 @@ describe("/api", () => {
         })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("None-existant id");
+          expect(body.msg).toBe("No review with id 9999");
         });
     });
     test("400: Should return when passed a body with property value of incorrect type", () => {
