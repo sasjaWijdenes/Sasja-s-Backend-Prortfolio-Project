@@ -24,9 +24,11 @@ exports.getReviewById = (req, res, next) => {
 };
 
 exports.getCommentsByReviewId = (req, res, next) => {
-  fetchCommentsByReviewId(req.params.review_id).then((comments) => {
-    res.status(200).send({ comments });
-  });
+  fetchCommentsByReviewId(req.params.review_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch(next);
 };
 
 exports.incrementVotes = (req, res, next) => {

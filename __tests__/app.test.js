@@ -286,6 +286,29 @@ describe("/api", () => {
           expect(body.msg).toBe("Passed malformed body");
         });
     });
+    test("POST: 400 Invalid id should return when using an invalid id", () => {
+      return request(app)
+        .post("/api/reviews/notAnId/comments")
+        .send({
+          username: "bainesface",
+          body: "This game saved my marrage! 2/10",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid Id");
+        });
+    });
+    test("POST: 400 Missing field should return when passed a body with missing fields", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({
+          username: "bainesface",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Missing fields");
+        });
+    });
     test("400: Should return when passed a body with property value of incorrect type", () => {
       return request(app)
         .patch("/api/reviews/3")
