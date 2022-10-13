@@ -118,7 +118,7 @@ describe("/api", () => {
               });
             });
         });
-        test("PATCH: Should update votes property of review object with relevent review_is", () => {
+        test("PATCH: Should update votes property of review object with relevent review_id", () => {
           return request(app)
             .patch("/api/reviews/1")
             .send({ inc_votes: 3 })
@@ -139,6 +139,7 @@ describe("/api", () => {
               });
             });
         });
+
         describe("/review_id/comments", () => {
           test("Should return an array of all comments associated with passed review_id", () => {
             return request(app)
@@ -178,6 +179,27 @@ describe("/api", () => {
           //       ).toBe(true);
           //     });
           // });
+          describe("POST/api/reviews/review_id/comments", () => {
+            test("Should accept object with a username and body property", () => {
+              return request(app)
+                .post("/api/reviews/1/comments")
+                .send({
+                  username: "bainesface",
+                  body: "This game saved my marrage! 2/10",
+                })
+                .expect(201)
+                .then(({ body: { comment } }) => {
+                  expect(comment).toEqual({
+                    author: "bainesface",
+                    body: "This game saved my marrage! 2/10",
+                    comment_id: 7,
+                    created_at: expect.any(String),
+                    review_id: 1,
+                    votes: 0,
+                  });
+                });
+            });
+          });
         });
       });
     });
@@ -186,8 +208,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/users")
           .expect(200)
-          .then(({ body }) => {
-            const { users } = body;
+          .then(({ body: { users } }) => {
             expect(users).toHaveLength(4);
             expect(
               users.forEach((user) => {
@@ -247,9 +268,18 @@ describe("/api", () => {
           expect(body.msg).toBe("No user found for user 99599");
         });
     });
-    test("404: Should return when passed a malformed body", () => {
+    test("PATCH: 404: Should return when passed a malformed body", () => {
       return request(app)
         .patch("/api/reviews/2")
+        .send({})
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("POST: 404: Should return when passed a malformed body", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
         .send({})
         .expect(404)
         .then(({ body }) => {

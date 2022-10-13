@@ -67,3 +67,16 @@ exports.fetchCommentsByReviewId = (id) => {
     )
     .then(({ rows: comments }) => comments);
 };
+
+exports.addComment = (id, username, body) => {
+  if (!username || !body)
+    return Promise.reject({ status: 404, msg: "Passed malformed body" });
+  return db
+    .query(
+      `INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;`,
+      [body, username, id]
+    )
+    .then(({ rows: comments }) => {
+      return comments[0];
+    });
+};
