@@ -56,9 +56,9 @@ describe("/api", () => {
             );
           });
       });
-      test("Should accept a query for category to sort the reviews by", () => {
+      test("Should accept a query for category to filter the reviews by", () => {
         return request(app)
-          .get("/api/reviews?sort=dexterity")
+          .get("/api/reviews?filter=dexterity")
           .expect(200)
           .then(({ body: { reviews } }) => {
             expect(reviews).toHaveLength(1);
@@ -75,6 +75,28 @@ describe("/api", () => {
               votes: 5,
               review_id: 2,
             });
+          });
+      });
+      test("Sort order should default to date", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const dates = reviews.map((review) => new Date(review.created_at)),
+              sortedDates = [...dates].sort((a, b) => b - a);
+            expect(dates).toEqual(sortedDates);
+          });
+      });
+      test("Should accept any valid column to sort by", () => {
+        return request(app)
+          .get("/api/reviews?sort=votes")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const votes = reviews.map((review) => review.votes),
+              sortedVotes = [...votes].sort((a, b) => b - a);
+            // console.log(votes);
+            // console.log(sortedVotes);
+            expect(votes).toEqual(sortedVotes);
           });
       });
       describe("/review_id", () => {
@@ -269,7 +291,7 @@ describe("/api", () => {
     });
     test("Should return when passed a query that doesn't exist", () => {
       return request(app)
-        .get("/api/reviews?sort=pineapple")
+        .get("/api/reviews?filter=pineapple")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toEqual("No such category");
