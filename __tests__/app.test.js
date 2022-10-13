@@ -162,22 +162,18 @@ describe("/api", () => {
                 );
               });
           });
-          // test("Comments should be returned in reverse-chronological order", () => {
-          //   return request(app)
-          //     .get("/api/reviews/2/comments")
-          //     .expect(200)
-          //     .then(({ body: { comments } }) => {
-          //       const dates = comments.map((comment) =>
-          //         new Date(comment.created_at).getTime()
-          //       ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
-          //       console.log(dates);
-          //       expect(
-          //         [...dates, 0].every(
-          //           (date, index, arr) => date > arr[index + 1]
-          //         )
-          //       ).toBe(true);
-          //     });
-          // });
+          test("Comments should be returned in reverse-chronological order", () => {
+            return request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                const dates = comments.map((comment) =>
+                  new Date(comment.created_at).getTime()
+                );
+                const sortedDates = [...dates].sort((a, b) => b - a);
+                expect(dates).toEqual(sortedDates);
+              });
+          });
         });
       });
     });
