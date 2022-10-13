@@ -59,13 +59,25 @@ exports.updateReviewVotes = (id, votesToAdd) => {
     });
 };
 
+exports.isValidId = (id) => {
+  return db.query(`SELECT review_id FROM reviews;`).then(({ rows: ids }) => {
+    ids = ids.map((e) => e.review_id);
+    console.log(ids, "<<<ids");
+    return ids.includes(id);
+  });
+};
+
 exports.fetchCommentsByReviewId = (id) => {
-  return db
-    .query(
-      `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
-      [id]
-    )
-    .then(({ rows: comments }) => {
-      return comments;
-    });
+  return this.isValidId(id).then((isValid) => {
+    if (!isValid)
+      return Promise.reject({ status: 404, msg: "Review does not exist" });
+    return db
+      .query(
+        `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
+        [id]
+      )
+      .then(({ rows: comments }) => {
+        return comments;
+      });
+  });
 };

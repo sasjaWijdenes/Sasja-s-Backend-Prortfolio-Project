@@ -242,6 +242,14 @@ describe("/api", () => {
           expect(body.msg).toEqual("Invalid Id");
         });
     });
+    test("GET: 404 Should return when review_id is of the correct type but does not exist", () => {
+      return request(app)
+        .get("/api/reviews/9999/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Review does not exist");
+        });
+    });
     test("404: should return when passed an id for object that doesnt exist", () => {
       return request(app)
         .get("/api/reviews/99999")
