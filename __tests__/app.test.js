@@ -277,11 +277,11 @@ describe("/api", () => {
           expect(body.msg).toBe("Passed malformed body");
         });
     });
-    test("POST: 404: Should return when passed a malformed body", () => {
+    test("POST: 400: Should return when passed a malformed body", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send({})
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Passed malformed body");
         });
@@ -298,7 +298,7 @@ describe("/api", () => {
           expect(body.msg).toBe("Invalid Id");
         });
     });
-    test("POST: 400 Missing field should return when passed a body with missing fields", () => {
+    test("POST: 400 Malformed body should return when passed a body with missing fields", () => {
       return request(app)
         .post("/api/reviews/2/comments")
         .send({
@@ -306,7 +306,19 @@ describe("/api", () => {
         })
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Missing fields");
+          expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("POST: 404 Non-existant id should return when passed an id not in the database", () => {
+      return request(app)
+        .post("/api/reviews/9999/comments")
+        .send({
+          username: "bainesface",
+          body: "This game saved my marrage! 2/10",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("None-existant id");
         });
     });
     test("400: Should return when passed a body with property value of incorrect type", () => {
