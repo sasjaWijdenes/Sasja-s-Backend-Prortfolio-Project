@@ -318,7 +318,7 @@ describe("/api", () => {
         })
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("No review with id 9999");
+          expect(body.msg).toBe("Not found");
         });
     });
     test("400: Should return when passed a body with property value of incorrect type", () => {
