@@ -35,6 +35,7 @@ exports.incrementVotes = (req, res, next) => {
   } = req;
   updateReviewVotes(id, votes)
     .then((review) => {
+      // console.log(review, "<<<review");
       res.status(200).send({ review });
     })
     .catch(next);
