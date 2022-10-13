@@ -25,7 +25,6 @@ exports.getReviewById = (req, res, next) => {
 exports.getCommentsByReviewId = (req, res, next) => {
   fetchCommentsByReviewId(req.params.review_id)
     .then((comments) => {
-      console.log(comments, "<<<comments in controllers");
       res.status(200).send({ comments });
     })
     .catch(next);
@@ -38,7 +37,6 @@ exports.incrementVotes = (req, res, next) => {
   } = req;
   updateReviewVotes(id, votes)
     .then((review) => {
-      // console.log(review, "<<<review");
       res.status(200).send({ review });
     })
     .catch(next);

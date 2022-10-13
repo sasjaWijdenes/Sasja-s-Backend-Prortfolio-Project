@@ -166,9 +166,7 @@ describe("/api", () => {
             return request(app)
               .get("/api/reviews/1/comments")
               .expect(200)
-              .then((body) => {
-                console.log(body);
-                console.log(comments, "<<<coments in test");
+              .then(({ body: { comments } }) => {
                 expect(comments).toEqual([]);
               });
           });
