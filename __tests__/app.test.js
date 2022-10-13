@@ -162,6 +162,16 @@ describe("/api", () => {
                 );
               });
           });
+          test("Should return an empty array when passed a valid id but has no comments", () => {
+            return request(app)
+              .get("/api/reviews/1/comments")
+              .expect(200)
+              .then((body) => {
+                console.log(body);
+                console.log(comments, "<<<coments in test");
+                expect(comments).toEqual([]);
+              });
+          });
           test("Comments should be returned in reverse-chronological order", () => {
             return request(app)
               .get("/api/reviews/2/comments")
@@ -221,6 +231,14 @@ describe("/api", () => {
       return request(app)
         .patch("/api/reviews/InvalidId")
         .send({ inc_votes: 4 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Id");
+        });
+    });
+    test("400: Should return with invalid id when accessing comments with invalid review id", () => {
+      return request(app)
+        .get("/api/reviews/notAnId/comments")
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toEqual("Invalid Id");

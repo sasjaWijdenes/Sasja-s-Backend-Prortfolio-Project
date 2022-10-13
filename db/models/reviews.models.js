@@ -65,5 +65,7 @@ exports.fetchCommentsByReviewId = (id) => {
       `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
       [id]
     )
-    .then(({ rows: comments }) => comments);
+    .then(({ rows: comments }) => {
+      return comments;
+    });
 };
