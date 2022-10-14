@@ -6,6 +6,7 @@ const express = require("express"),
     incrementVotes,
     getAllReviews,
     getCommentsByReviewId,
+    postComment,
   } = require("./controllers/reviews.controllers.js"),
   app = express();
 
@@ -16,6 +17,8 @@ app.get("/api/users", getAllUsers);
 app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
+
+app.post("/api/reviews/:review_id/comments", postComment);
 
 app.patch("/api/reviews/:review_id", incrementVotes);
 
