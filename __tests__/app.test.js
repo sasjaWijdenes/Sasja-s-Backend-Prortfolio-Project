@@ -309,12 +309,28 @@ describe("/api", () => {
           );
         });
     });
-    test("Should return when passed a query that doesn't exist", () => {
+    test("400: Should return when passed a filter query that doesn't exist", () => {
       return request(app)
         .get("/api/reviews?filter=pineapple")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toEqual("No such category");
+        });
+    });
+    test("404: Should return when passed an invalid sort value", () => {
+      return request(app)
+        .get("/api/reviews?sort=invalidSortQuery")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid sort query");
+        });
+    });
+    test("404: Should return when passed an invalid order value", () => {
+      return request(app)
+        .get("/api/reviews?order=invalidOrderQuery")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid sort query");
         });
     });
   });

@@ -15,7 +15,7 @@ exports.fetchAllReviews = (category, sort = `created_at`, order = `DESC`) => {
   if (!categories.includes(category))
     return Promise.reject({ status: 404, msg: "No such category" });
   if (!sortValues.includes(sort) || ![`ASC`, `DESC`].includes(order))
-    return Promise.reject({ status: 404, msg: "Invalid sort query" });
+    return Promise.reject({ status: 400, msg: "Invalid sort query" });
   if (category) {
     queryString += `WHERE reviews.category = $1 `;
     queryValues.push(category);
