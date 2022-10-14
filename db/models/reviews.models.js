@@ -1,6 +1,6 @@
 const db = require("../connection.js");
 
-exports.fetchAllReviews = (category, sort = `created_at`) => {
+exports.fetchAllReviews = (category, sort = `created_at`, order = `DESC`) => {
   const queryValues = [],
     categories = ["euro game", "dexterity", "social deduction", undefined],
     sortValues = [
@@ -14,16 +14,21 @@ exports.fetchAllReviews = (category, sort = `created_at`) => {
   let queryString = `SELECT reviews.*, COUNT(comments.review_id)::INT AS comment_count FROM reviews LEFT JOIN comments ON reviews.review_id = comments.review_id `;
   if (!categories.includes(category))
     return Promise.reject({ status: 404, msg: "No such category" });
-  if (!sortValues.includes(sort))
+  if (!sortValues.includes(sort) || ![`ASC`, `DESC`].includes(order))
     return Promise.reject({ status: 404, msg: "Invalid sort query" });
   if (category) {
     queryString += `WHERE reviews.category = $1 `;
     queryValues.push(category);
   }
-  queryString += `GROUP BY reviews.review_id ORDER BY ${sort} DESC;`;
-  return db.query(queryString, queryValues).then(({ rows: reviews }) => {
-    return reviews;
-  });
+  queryString += `GROUP BY reviews.review_id ORDER BY ${sort} ${order};`;
+  return db
+    .query(queryString, queryValues)
+    .then(({ rows: reviews }) => {
+      return reviews;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.fetchReviewById = (id) => {

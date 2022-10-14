@@ -106,6 +106,35 @@ describe("/api", () => {
           });
         return Promise.all([sortVotes, sortOwner]);
       });
+      test("Should accept order query which defaults to DESC", () => {
+        return request(app)
+          .get("/api/reviews?sort=votes")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const votes = reviews.map((review) => review.votes),
+              sortedVotes = [...votes].sort((a, b) => b - a);
+            expect(votes).toEqual(sortedVotes);
+          });
+      });
+      test("Should accept order query to specify sort order", () => {
+        const datesQuery = request(app)
+          .get("/api/reviews?order=ASC")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const dates = reviews.map((review) => new Date(review.created_at)),
+              sortedDates = [...dates].sort((a, b) => a - b);
+            expect(dates).toEqual(sortedDates);
+          });
+        const votesQuery = request(app)
+          .get("/api/reviews?sort=votes&order=ASC")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const votes = reviews.map((review) => review.votes),
+              sortedVotes = [...votes].sort((a, b) => a - b);
+            expect(votes).toEqual(sortedVotes);
+          });
+        return Promise.all([datesQuery, votesQuery]);
+      });
       describe("/review_id", () => {
         test("GET: Should return a review object relating to the passed review_id", () => {
           return request(app)
@@ -191,22 +220,6 @@ describe("/api", () => {
                 );
               });
           });
-          // test("Comments should be returned in reverse-chronological order", () => {
-          //   return request(app)
-          //     .get("/api/reviews/2/comments")
-          //     .expect(200)
-          //     .then(({ body: { comments } }) => {
-          //       const dates = comments.map((comment) =>
-          //         new Date(comment.created_at).getTime()
-          //       ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
-          //       console.log(dates);
-          //       expect(
-          //         [...dates, 0].every(
-          //           (date, index, arr) => date > arr[index + 1]
-          //         )
-          //       ).toBe(true);
-          //     });
-          // });
         });
       });
     });
