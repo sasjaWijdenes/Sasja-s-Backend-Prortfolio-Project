@@ -163,22 +163,26 @@ describe("/api", () => {
                 );
               });
           });
-          // test("Comments should be returned in reverse-chronological order", () => {
-          //   return request(app)
-          //     .get("/api/reviews/2/comments")
-          //     .expect(200)
-          //     .then(({ body: { comments } }) => {
-          //       const dates = comments.map((comment) =>
-          //         new Date(comment.created_at).getTime()
-          //       ); // Initialy checked dates against a sorted version but it was mutating the origonal so i went with this
-          //       console.log(dates);
-          //       expect(
-          //         [...dates, 0].every(
-          //           (date, index, arr) => date > arr[index + 1]
-          //         )
-          //       ).toBe(true);
-          //     });
-          // });
+          test("Should return an empty array when passed a valid id but has no comments", () => {
+            return request(app)
+              .get("/api/reviews/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).toEqual([]);
+              });
+          });
+          test("Comments should be returned in reverse-chronological order", () => {
+            return request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                const dates = comments.map((comment) =>
+                  new Date(comment.created_at).getTime()
+                );
+                const sortedDates = [...dates].sort((a, b) => b - a);
+                expect(dates).toEqual(sortedDates);
+              });
+          });
           describe("POST/api/reviews/review_id/comments", () => {
             test("Should accept object with a username and body property", () => {
               return request(app)
@@ -249,6 +253,22 @@ describe("/api", () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toEqual("Invalid Id");
+        });
+    });
+    test("400: Should return with invalid id when accessing comments with invalid review id", () => {
+      return request(app)
+        .get("/api/reviews/notAnId/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Id");
+        });
+    });
+    test("GET: 404 Should return when review_id is of the correct type but does not exist", () => {
+      return request(app)
+        .get("/api/reviews/9999/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Review does not exist");
         });
     });
     test("404: should return when passed an id for object that doesnt exist", () => {

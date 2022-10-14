@@ -60,19 +60,21 @@ exports.updateReviewVotes = (id, votesToAdd) => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  return db
+  const validCheck = db.query(
+    `SELECT review_id FROM reviews WHERE review_id = $1;`,
+    [id]
+  );
+  const comments = db
     .query(
       `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
       [id]
     )
-    .then(({ rows: comments }) => {
-      if (!comments)
-        return Promise.reject({
-          status: 404,
-          msg: `No comment found for review_id: ${id}`,
-        });
-      return comments;
-    });
+    .then(({ rows: comments }) => comments);
+  return Promise.all([validCheck, comments]).then(([result, comments]) => {
+    if (result.rows.length < 1)
+      return Promise.reject({ status: 404, msg: "Review does not exist" });
+    return comments;
+  });
 };
 
 exports.addComment = (id, username, body) => {
