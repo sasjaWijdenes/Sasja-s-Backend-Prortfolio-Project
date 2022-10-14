@@ -2,7 +2,8 @@ const request = require("supertest"),
   db = require("../db/connection.js"),
   app = require("../db/app.js"),
   seed = require("../db/seeds/seed.js"),
-  testData = require("../db/data/test-data/index.js");
+  testData = require("../db/data/test-data/index.js"),
+  jestSorted = require("jest-sorted");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -58,7 +59,7 @@ describe("/api", () => {
       });
       test("Should accept a query for category to filter the reviews by", () => {
         return request(app)
-          .get("/api/reviews?filter=dexterity")
+          .get("/api/reviews?category=dexterity")
           .expect(200)
           .then(({ body: { reviews } }) => {
             expect(reviews).toHaveLength(1);
@@ -82,9 +83,10 @@ describe("/api", () => {
           .get("/api/reviews")
           .expect(200)
           .then(({ body: { reviews } }) => {
-            const dates = reviews.map((review) => new Date(review.created_at)),
-              sortedDates = [...dates].sort((a, b) => b - a);
-            expect(dates).toEqual(sortedDates);
+            expect(reviews).toBeSortedBy("created_at", {
+              decending: true,
+              coerce: true,
+            });
           });
       });
       test("Should accept any valid column to sort by", () => {
@@ -309,9 +311,9 @@ describe("/api", () => {
           );
         });
     });
-    test("400: Should return when passed a filter query that doesn't exist", () => {
+    test("400: Should return when passed a category query that doesn't exist", () => {
       return request(app)
-        .get("/api/reviews?filter=pineapple")
+        .get("/api/reviews?category=pineapple")
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toEqual("No such category");
