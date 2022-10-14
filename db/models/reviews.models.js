@@ -1,7 +1,7 @@
 const db = require("../connection.js");
 
 exports.fetchAllReviews = (category, sort = `created_at`) => {
-  const queryValues = [],
+  const queryValues = [sort],
     categories = ["euro game", "dexterity", "social deduction", undefined],
     sortValues = [
       `title`,
@@ -17,13 +17,18 @@ exports.fetchAllReviews = (category, sort = `created_at`) => {
   if (!sortValues.includes(sort))
     return Promise.reject({ status: 404, msg: "Invalid sort query" });
   if (category) {
+    console.log({ category });
     queryString += `WHERE reviews.category = $2 `;
     queryValues.push(category);
   }
   queryString += `GROUP BY reviews.review_id ORDER BY $1 DESC;`;
-  return db.query(queryString, queryValues).then(({ rows: reviews }) => {
-    return reviews;
-  });
+  console.log({ queryString, queryValues });
+  return db
+    .query(queryString, queryValues)
+    .then(({ rows: reviews }) => {
+      return reviews;
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.fetchReviewById = (id) => {

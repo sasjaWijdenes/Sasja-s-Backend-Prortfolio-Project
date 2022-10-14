@@ -77,13 +77,15 @@ describe("/api", () => {
             });
           });
       });
-      test("Sort order should default to date", () => {
+      test.only("Sort order should default to date", () => {
         return request(app)
           .get("/api/reviews")
           .expect(200)
           .then(({ body: { reviews } }) => {
             const dates = reviews.map((review) => new Date(review.created_at)),
               sortedDates = [...dates].sort((a, b) => b - a);
+            console.log({ dates });
+            console.log({ sortedDates });
             expect(dates).toEqual(sortedDates);
           });
       });
