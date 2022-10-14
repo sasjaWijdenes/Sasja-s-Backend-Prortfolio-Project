@@ -84,22 +84,27 @@ describe("/api", () => {
           .then(({ body: { reviews } }) => {
             const dates = reviews.map((review) => new Date(review.created_at)),
               sortedDates = [...dates].sort((a, b) => b - a);
-            console.log({ dates });
-            console.log({ sortedDates });
             expect(dates).toEqual(sortedDates);
           });
       });
       test("Should accept any valid column to sort by", () => {
-        return request(app)
+        const sortVotes = request(app)
           .get("/api/reviews?sort=votes")
           .expect(200)
           .then(({ body: { reviews } }) => {
             const votes = reviews.map((review) => review.votes),
               sortedVotes = [...votes].sort((a, b) => b - a);
-            // console.log(votes);
-            // console.log(sortedVotes);
             expect(votes).toEqual(sortedVotes);
           });
+        const sortOwner = request(app)
+          .get("/api/reviews?sort=owner")
+          .expect(200)
+          .then(({ body: { reviews } }) => {
+            const owners = reviews.map((review) => review.owner),
+              sortedOwners = [...owners].sort((a, b) => b - a);
+            expect(owners).toEqual(sortedOwners);
+          });
+        return Promise.all([sortVotes, sortOwner]);
       });
       describe("/review_id", () => {
         test("GET: Should return a review object relating to the passed review_id", () => {

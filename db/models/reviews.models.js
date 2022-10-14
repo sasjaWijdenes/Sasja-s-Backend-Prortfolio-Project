@@ -21,9 +21,7 @@ exports.fetchAllReviews = (category, sort = `created_at`) => {
     queryValues.push(category);
   }
   queryString += `GROUP BY reviews.review_id ORDER BY ${sort} DESC;`;
-  console.log({ queryString, queryValues });
   return db.query(queryString, queryValues).then(({ rows: reviews }) => {
-    console.log({ reviews });
     return reviews;
   });
 };
