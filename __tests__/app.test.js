@@ -77,7 +77,7 @@ describe("/api", () => {
             });
           });
       });
-      test.only("Sort order should default to date", () => {
+      test("Sort order should default to date", () => {
         return request(app)
           .get("/api/reviews")
           .expect(200)
