@@ -35,7 +35,7 @@ exports.fetchReviewById = (id) => {
 
 exports.updateReviewVotes = (id, votesToAdd) => {
   if (!votesToAdd)
-    return Promise.reject({ status: 404, msg: "Passed malformed body" });
+    return Promise.reject({ status: 400, msg: "Passed malformed body" });
   if (typeof votesToAdd !== "number")
     return Promise.reject({
       status: 400,
@@ -65,5 +65,26 @@ exports.fetchCommentsByReviewId = (id) => {
       `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
       [id]
     )
-    .then(({ rows: comments }) => comments);
+    .then(({ rows: comments }) => {
+      if (!comments)
+        return Promise.reject({
+          status: 404,
+          msg: `No comment found for review_id: ${id}`,
+        });
+      return comments;
+    });
+};
+
+exports.addComment = (id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Passed malformed body" });
+  }
+  return db
+    .query(
+      `INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;`,
+      [body, username, id]
+    )
+    .then(({ rows: comments }) => {
+      return comments[0];
+    });
 };
