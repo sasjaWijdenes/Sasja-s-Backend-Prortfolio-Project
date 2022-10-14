@@ -50,7 +50,7 @@ exports.fetchReviewById = (id) => {
 
 exports.updateReviewVotes = (id, votesToAdd) => {
   if (!votesToAdd)
-    return Promise.reject({ status: 404, msg: "Passed malformed body" });
+    return Promise.reject({ status: 400, msg: "Passed malformed body" });
   if (typeof votesToAdd !== "number")
     return Promise.reject({
       status: 400,
@@ -75,10 +75,33 @@ exports.updateReviewVotes = (id, votesToAdd) => {
 };
 
 exports.fetchCommentsByReviewId = (id) => {
-  return db
+  const validCheck = db.query(
+    `SELECT review_id FROM reviews WHERE review_id = $1;`,
+    [id]
+  );
+  const comments = db
     .query(
       `SELECT * FROM comments WHERE review_id = $1 ORDER BY created_at DESC;`,
       [id]
     )
     .then(({ rows: comments }) => comments);
+  return Promise.all([validCheck, comments]).then(([result, comments]) => {
+    if (result.rows.length < 1)
+      return Promise.reject({ status: 404, msg: "Review does not exist" });
+    return comments;
+  });
+};
+
+exports.addComment = (id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, msg: "Passed malformed body" });
+  }
+  return db
+    .query(
+      `INSERT INTO comments (body, author, review_id) VALUES ($1, $2, $3) RETURNING *;`,
+      [body, username, id]
+    )
+    .then(({ rows: comments }) => {
+      return comments[0];
+    });
 };

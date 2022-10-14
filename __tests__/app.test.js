@@ -178,7 +178,7 @@ describe("/api", () => {
               });
             });
         });
-        test("PATCH: Should update votes property of review object with relevent review_is", () => {
+        test("PATCH: Should update votes property of review object with relevent review_id", () => {
           return request(app)
             .patch("/api/reviews/1")
             .send({ inc_votes: 3 })
@@ -199,6 +199,7 @@ describe("/api", () => {
               });
             });
         });
+
         describe("/review_id/comments", () => {
           test("Should return an array of all comments associated with passed review_id", () => {
             return request(app)
@@ -222,6 +223,47 @@ describe("/api", () => {
                 );
               });
           });
+          test("Should return an empty array when passed a valid id but has no comments", () => {
+            return request(app)
+              .get("/api/reviews/1/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).toEqual([]);
+              });
+          });
+          test("Comments should be returned in reverse-chronological order", () => {
+            return request(app)
+              .get("/api/reviews/2/comments")
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                const dates = comments.map((comment) =>
+                  new Date(comment.created_at).getTime()
+                );
+                const sortedDates = [...dates].sort((a, b) => b - a);
+                expect(dates).toEqual(sortedDates);
+              });
+          });
+          describe("POST/api/reviews/review_id/comments", () => {
+            test("Should accept object with a username and body property", () => {
+              return request(app)
+                .post("/api/reviews/1/comments")
+                .send({
+                  username: "bainesface",
+                  body: "This game saved my marrage! 2/10",
+                })
+                .expect(201)
+                .then(({ body: { comment } }) => {
+                  expect(comment).toEqual({
+                    author: "bainesface",
+                    body: "This game saved my marrage! 2/10",
+                    comment_id: 7,
+                    created_at: expect.any(String),
+                    review_id: 1,
+                    votes: 0,
+                  });
+                });
+            });
+          });
         });
       });
     });
@@ -230,8 +272,7 @@ describe("/api", () => {
         return request(app)
           .get("/api/users")
           .expect(200)
-          .then(({ body }) => {
-            const { users } = body;
+          .then(({ body: { users } }) => {
             expect(users).toHaveLength(4);
             expect(
               users.forEach((user) => {
@@ -274,6 +315,22 @@ describe("/api", () => {
           expect(body.msg).toEqual("Invalid Id");
         });
     });
+    test("400: Should return with invalid id when accessing comments with invalid review id", () => {
+      return request(app)
+        .get("/api/reviews/notAnId/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toEqual("Invalid Id");
+        });
+    });
+    test("GET: 404 Should return when review_id is of the correct type but does not exist", () => {
+      return request(app)
+        .get("/api/reviews/9999/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Review does not exist");
+        });
+    });
     test("404: should return when passed an id for object that doesnt exist", () => {
       return request(app)
         .get("/api/reviews/99999")
@@ -291,13 +348,57 @@ describe("/api", () => {
           expect(body.msg).toBe("No user found for user 99599");
         });
     });
-    test("404: Should return when passed a malformed body", () => {
+    test("PATCH: 400: Should return when passed a malformed body", () => {
       return request(app)
         .patch("/api/reviews/2")
         .send({})
-        .expect(404)
+        .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("POST: 400: Should return when passed a malformed body", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("POST: 400 Invalid id should return when using an invalid id", () => {
+      return request(app)
+        .post("/api/reviews/notAnId/comments")
+        .send({
+          username: "bainesface",
+          body: "This game saved my marrage! 2/10",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid Id");
+        });
+    });
+    test("POST: 400 Malformed body should return when passed a body with missing fields", () => {
+      return request(app)
+        .post("/api/reviews/2/comments")
+        .send({
+          username: "bainesface",
+        })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Passed malformed body");
+        });
+    });
+    test("POST: 404 Non-existant id should return when passed an id does not match any review", () => {
+      return request(app)
+        .post("/api/reviews/9999/comments")
+        .send({
+          username: "bainesface",
+          body: "This game saved my marrage! 2/10",
+        })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not found");
         });
     });
     test("400: Should return when passed a body with property value of incorrect type", () => {

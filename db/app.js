@@ -6,6 +6,7 @@ const express = require("express"),
     incrementVotes,
     getAllReviews,
     getCommentsByReviewId,
+    postComment,
   } = require("./controllers/reviews.controllers.js"),
   app = express();
 
@@ -17,11 +18,18 @@ app.get("/api/reviews", getAllReviews);
 app.get("/api/reviews/:review_id", getReviewById);
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
 
+app.post("/api/reviews/:review_id/comments", postComment);
+
 app.patch("/api/reviews/:review_id", incrementVotes);
 
 app.all("*", (req, res) =>
   res.status(404).send({ msg: "That route does not exist" })
 );
+
+app.use((err, req, res, next) => {
+  if (err.code === "23503") res.status(404).send({ msg: "Not found" });
+  else next(err);
+});
 
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
