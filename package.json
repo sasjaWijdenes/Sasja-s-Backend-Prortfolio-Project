@@ -2,8 +2,8 @@
   "name": "be-nc-games",
   "version": "1.0.0",
   "engines": {
-    "node": "18.8.0",
-    "npm": "8.18.0"
+    "node": "18.x",
+    "npm": "8.x"
   },
   "description": "bc-nc-games",
   "main": "index.js",
