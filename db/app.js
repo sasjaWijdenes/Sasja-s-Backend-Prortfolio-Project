@@ -13,6 +13,7 @@ const express = require("express"),
 
 app.use(express.json());
 
+app.get("/", (req, res, next) => res.status(200).send("Welcome to my API"));
 app.get("/api", (req, res, next) =>
   res.status(200).send({ endpoints }).catch(next)
 );
