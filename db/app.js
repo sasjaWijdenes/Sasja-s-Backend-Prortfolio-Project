@@ -1,4 +1,5 @@
 const express = require("express"),
+  endpoints = require("../endpoints.json"),
   { getAllCategories } = require("./controllers/categories.controllers.js"),
   { getAllUsers } = require("./controllers/users.controllers.js"),
   {
@@ -12,6 +13,9 @@ const express = require("express"),
 
 app.use(express.json());
 
+app.get("/api", (req, res, next) =>
+  res.status(200).send({ endpoints }).catch(next)
+);
 app.get("/api/categories", getAllCategories);
 app.get("/api/users", getAllUsers);
 app.get("/api/reviews", getAllReviews);
