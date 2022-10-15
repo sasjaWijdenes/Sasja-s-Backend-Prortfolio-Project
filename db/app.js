@@ -22,9 +22,10 @@ app.post("/api/reviews/:review_id/comments", postComment);
 
 app.patch("/api/reviews/:review_id", incrementVotes);
 
-app.all("*", (req, res) =>
-  res.status(404).send({ msg: "That route does not exist" })
-);
+app.all("*", (req, res) => {
+  console.log(req);
+  res.status(404).send({ msg: "That route does not exist" });
+});
 
 app.use((err, req, res, next) => {
   if (err.code === "23503") res.status(404).send({ msg: "Not found" });
