@@ -1,4 +1,5 @@
 const express = require("express"),
+  cors = require('cors'),
   endpoints = require("../endpoints.json"),
   { getAllCategories } = require("./controllers/categories.controllers.js"),
   { getAllUsers } = require("./controllers/users.controllers.js"),
@@ -12,6 +13,7 @@ const express = require("express"),
   app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req, res, next) => res.status(200).send("Welcome to my API"));
 app.get("/api", (req, res, next) =>
