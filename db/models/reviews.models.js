@@ -2,7 +2,7 @@ const db = require("../connection.js");
 
 exports.fetchAllReviews = (category, sort = `created_at`, order = `DESC`) => {
   const queryValues = [],
-    categories = ["euro game", "dexterity", "social deduction", undefined],
+    categories = ["euro game", "dexterity", "social deduction", "strategy", "hidden-roles", "push-your-luck", "roll-and-write", "deck-building", "engine-building", undefined],
     sortValues = [
       `title`,
       `designer`,
