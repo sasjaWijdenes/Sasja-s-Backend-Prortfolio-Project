@@ -94,7 +94,7 @@ exports.updateCommentVotes = (id, votesToAdd) => {
           msg: `No user found for user ${id}`,
         });
       } else {
-        return review;
+        return comment;
       }
     
   })
