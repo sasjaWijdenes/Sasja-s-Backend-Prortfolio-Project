@@ -73,6 +73,32 @@ exports.updateReviewVotes = (id, votesToAdd) => {
       }
     });
 };
+exports.updateCommentVotes = (id, votesToAdd) => {
+  if (!votesToAdd)
+    return Promise.reject({ status: 400, msg: "Passed malformed body" });
+  if (typeof votesToAdd !== "number")
+    return Promise.reject({
+      status: 400,
+      msg: "Request body has property of wrong data type.",
+    });
+  return db
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`,
+      [votesToAdd, id]
+  )
+    .then(({ rows }) => {
+      const comment = rows[0];
+      if (!comment) {
+        return Promise.reject({
+          status: 404,
+          msg: `No user found for user ${id}`,
+        });
+      } else {
+        return review;
+      }
+    
+  })
+}
 
 exports.fetchCommentsByReviewId = (id) => {
   const validCheck = db.query(
