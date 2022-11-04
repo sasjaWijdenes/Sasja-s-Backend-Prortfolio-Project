@@ -10,6 +10,7 @@ const express = require("express"),
     getCommentsByReviewId,
     postComment,
     incrementCommentVotes,
+    deleteComment,
   } = require("./controllers/reviews.controllers.js"),
   app = express();
 
@@ -30,6 +31,9 @@ app.post("/api/reviews/:review_id/comments", postComment);
 
 app.patch("/api/reviews/:review_id", incrementVotes);
 app.patch('/api/comments/:comment_id', incrementCommentVotes)
+
+app.delete('/api/comments/:comment_id', deleteComment)
+
 app.all("*", (req, res) => {
   console.log(req);
   res.status(404).send({ msg: "That route does not exist" });

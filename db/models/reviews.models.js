@@ -131,3 +131,13 @@ exports.addComment = (id, username, body) => {
       return comments[0];
     });
 };
+
+exports.deleteCommentById = (id) => {
+  return db.query(
+    `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`,
+    [id]
+  )
+    .then(({ rows: comment }) => {
+    return comment
+  })
+}

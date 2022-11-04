@@ -5,6 +5,7 @@ const {
   fetchCommentsByReviewId,
   addComment,
   updateCommentVotes,
+  deleteCommentById,
 } = require("../models/reviews.models.js");
 
 exports.getAllReviews = (req, res, next) => {
@@ -67,3 +68,11 @@ exports.postComment = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.deleteComment = (req, res, next) => {
+  const { params: { comment_id: id } } = req
+  deleteCommentById(id).then((comment) => {
+    res.status(204).send({comment})
+  })
+  .catch(next)
+}
